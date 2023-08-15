@@ -28,6 +28,13 @@ async function main() {
   await erc4907.deployed();
   console.log("ERC4907 deployed to:", erc4907.address);
 
+
+  //Deploy Rsc Token
+  const Rsc = await hre.ethers.getContractFactory("ERC4907");
+  const rsc = await Rsc.deploy("ERC4907", "ERC");
+  await rsc.deployed();
+  console.log("Rsc ERC20 token deployed to:", rsc.address);
+
   console.log("Deployment completed!");
 
 }
