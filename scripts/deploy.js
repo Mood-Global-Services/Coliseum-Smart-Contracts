@@ -23,10 +23,10 @@ async function main() {
   console.log("Cmax ERC20 token deployed to:", cmaxToken.address);
 
   // Deploy ERC4907 contract
-  const ERC4907 = await hre.ethers.getContractFactory("ERC4907");
-  const erc4907 = await ERC4907.deploy("ERC4907", "ERC");
-  await erc4907.deployed();
-  console.log("ERC4907 deployed to:", erc4907.address);
+  const TokenRequest = await hre.ethers.getContractFactory("TokenRequest");
+  const tokenRequest = await TokenRequest.deploy("Tokenreceipt", "TR", "usdc contract address","1");
+  await tokenRequest.deployed();
+  console.log("ERC4907 deployed to:", tokenRequest.address);
 
 
   //Deploy Rsc Token
