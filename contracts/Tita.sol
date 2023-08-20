@@ -6,28 +6,22 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Tita is ERC20, ERC20Burnable, Ownable {
+    address[] public tokenHolders; // Array to store token holders' addresses
+
     constructor() ERC20("MyToken", "MTK") {
         _mint(msg.sender, 10000 * 10 ** decimals());
+        tokenHolders.push(msg.sender); // Add the contract deployer as the initial token holder
     }
 
-    function mint(address to, uint256 amount) public onlyOwner {
+    function mint(address to, uint256 amount) public {
         _mint(to, amount);
+        if (balanceOf(to) > 0) {
+            tokenHolders.push(to); // Add the address to the token holders array
+        }
     }
 
-   function isTitaHolder(address _address) public view returns (bool) {
-        uint256 balance = balanceOf(_address);
-        if(balance > 0) {
-             return true; 
-        } else {
-             return false;
-        }
-      }
-
-        function checkHolderBalance(address _user) public view returns (uint256) {
-          if(balanceOf(_user) == 0) {
-              return 0;
-        } else {
-       return balanceOf(_user);
-        }
-      }
-   }
+    // Function to get the array of all holder addresses
+    function getTokenHolders() public view returns (address[] memory) {
+        return tokenHolders;
+    }
+}
