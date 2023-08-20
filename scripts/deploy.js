@@ -22,16 +22,24 @@ async function main() {
   await cmaxToken.deployed();
   console.log("Cmax ERC20 token deployed to:", cmaxToken.address);
 
-  // Deploy ERC4907 contract
+  // Deploy NFT contract
   const TokenRequest = await hre.ethers.getContractFactory("TokenRequest");
-  const tokenRequest = await TokenRequest.deploy("Tokenreceipt", "TR", "usdc contract address","1");
+  const tokenRequest = await TokenRequest.deploy("Tokenreceipt","TR","0xe0f837966a3db43De470695a02c131A893FeB5e4","1","0x93737B1246d4c9515c78c97EcD38B12BC85d1E74");
   await tokenRequest.deployed();
-  console.log("ERC4907 deployed to:", tokenRequest.address);
+  const confirmations = 5; // You can adjust this number as needed
+  await Promise.all([
+    tokenRequest.deployTransaction.wait(confirmations),
+  ]);
+  console.log("TokenRequest deployed to:", tokenRequest.address);
+  await hre.run("verify:verify", {
+    address: tokenRequest.address,
+    constructorArguments: ["Tokenreceipt","TR","0xe0f837966a3db43De470695a02c131A893FeB5e4","1","0x93737B1246d4c9515c78c97EcD38B12BC85d1E74"], // Add constructor arguments if any
+  });
 
 
   //Deploy Rsc Token
-  const Rsc = await hre.ethers.getContractFactory("ERC4907");
-  const rsc = await Rsc.deploy("ERC4907", "ERC");
+  const Rsc = await hre.ethers.getContractFactory("Rsc");
+  const rsc = await Rsc.deploy();
   await rsc.deployed();
   console.log("Rsc ERC20 token deployed to:", rsc.address);
 

@@ -5,7 +5,7 @@ import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
 import "@chainlink/contracts/src/v0.8/ConfirmedOwner.sol";
 import "./Rsc.sol"; // Import the Rsc token contract
 
-contract ChainlinkContract is ChainlinkClient, ConfirmedOwner {
+contract ChainlinkRsc is ChainlinkClient, ConfirmedOwner {
     using Chainlink for Chainlink.Request;
 
     uint256 public balance;
