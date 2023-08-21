@@ -26,6 +26,27 @@ contract TokenRequest is ERC721URIStorage, Ownable {
     uint256 public pricePerNFT; // Price for requesting tokens
     uint256 public annualDistributionPercentage = 4;
 
+struct TokenRequestInfo {
+    address userAddress;
+    uint256 amount;
+    uint256 timestamp;
+}
+
+struct BurnInfo {
+    address userAddress;
+    uint256 amount;
+    uint256 timestamp;
+}
+
+// Mapping to store token request information by token ID
+mapping(uint256 => TokenRequestInfo) public tokenRequests;
+// Mapping to store burn information by token ID
+mapping(uint256 => BurnInfo) public burnInfo;
+
+
+    // Event with timestamp 
+    event TokenRequested(address indexed user, uint256 amount, uint256 timestamp);
+
     // Timestamp of the last annual distribution
     uint256 public lastAnnualDistributionTimestamp;
 
@@ -37,41 +58,58 @@ contract TokenRequest is ERC721URIStorage, Ownable {
         lastAnnualDistributionTimestamp = block.timestamp;
     }
 
-  function requestToken(address _userAddress, uint256 _amount) public {
-        require(_amount > 0, "Amount must be greater than 0");
-        
-        // Transfer USDC tokens from user to contract
-        USDCInterface usdcToken = USDCInterface(usdcTokenAddress);
-        require(usdcToken.transferFrom(_userAddress, address(this), pricePerNFT * _amount), "USDC transfer failed");
-        
-        uint256 tokenId = tokenIdCounter;
-        _mint(_userAddress, tokenId);
-        
-        string memory svgData = generateSVG(_amount, block.timestamp, "Mint Token Request");
-        string memory tokenURI = generateTokenURI(svgData);
-        
-        _setTokenURI(tokenId, tokenURI);
-        
-        tokenIdCounter++;
-    }
+ function requestToken(address _userAddress, uint256 _amount) public {
+    require(_amount > 0, "Amount must be greater than 0");
+    
+    // Transfer USDC tokens from user to contract
+    USDCInterface usdcToken = USDCInterface(usdcTokenAddress);
+    require(usdcToken.transferFrom(_userAddress, address(this), pricePerNFT * _amount), "USDC transfer failed");
+    
+    uint256 tokenId = tokenIdCounter;
+    _mint(_userAddress, tokenId);
+    
+    string memory svgData = generateSVG(_amount, block.timestamp, "Mint  Request");
+    string memory tokenURI = generateTokenURI(svgData);
+    
+    _setTokenURI(tokenId, tokenURI);
+    
+    // Store the request information
+    tokenRequests[tokenId] = TokenRequestInfo({
+        userAddress: _userAddress,
+        amount: _amount,
+        timestamp: block.timestamp
+    });
+    
+    tokenIdCounter++;
+}
 
-      function burnToken(uint256 _amount) public {
-        require(_amount > 0, "Amount must be greater than 0");
-        
-        // Transfer TITA tokens from user to contract
-        TITAInterface titaToken = TITAInterface(titaTokenAddress);
-        titaToken.burnFrom(msg.sender, _amount);
-        
-        uint256 tokenId = tokenIdCounter;
-        _mint(msg.sender, tokenId);
-        
-        string memory svgData = generateSVG(_amount, block.timestamp, "Burn Token Request");
-        string memory tokenURI = generateTokenURI(svgData);
-        
-        _setTokenURI(tokenId, tokenURI);
-        
-        tokenIdCounter++;
-   }
+
+
+   function burnToken(uint256 _amount) public {
+    require(_amount > 0, "Amount must be greater than 0");
+    
+    // Transfer TITA tokens from user to contract
+    TITAInterface titaToken = TITAInterface(titaTokenAddress);
+    titaToken.burnFrom(msg.sender, _amount);
+    
+    uint256 tokenId = tokenIdCounter;
+    _mint(msg.sender, tokenId);
+    
+    string memory svgData = generateSVG(_amount, block.timestamp, "Burn Token Request");
+    string memory tokenURI = generateTokenURI(svgData);
+    
+    _setTokenURI(tokenId, tokenURI);
+    
+    // Store the burn information
+    burnInfo[tokenId] = BurnInfo({
+        userAddress: msg.sender,
+        amount: _amount,
+        timestamp: block.timestamp
+    });
+    
+    tokenIdCounter++;
+}
+
 
 
 // Function to distribute 80% of owner's USDC Balance to all TITA holders monthly/weekly whenever funds are present in the wallet
@@ -134,6 +172,32 @@ contract TokenRequest is ERC721URIStorage, Ownable {
         // Update the last annual distribution timestamp to the current time
         lastAnnualDistributionTimestamp = block.timestamp;
     }
+
+
+  // fetch all user addresses with amount amd time who have requested for token
+    function getAllTokenRequests() public view returns (TokenRequestInfo[] memory) {
+    TokenRequestInfo[] memory requests = new TokenRequestInfo[](tokenIdCounter - 1);
+    for (uint256 tokenId = 1; tokenId < tokenIdCounter; tokenId++) {
+        TokenRequestInfo memory info = tokenRequests[tokenId];
+        if (info.amount > 0 && info.timestamp > 0) {
+            requests[tokenId - 1] = info;
+        }
+    }
+    return requests;
+    }
+
+  // fetch all user addresses with amount and time who have requested for token burn
+function getAllBurnRequests() public view returns (BurnInfo[] memory) {
+    BurnInfo[] memory burnRequests = new BurnInfo[](tokenIdCounter - 1);
+    for (uint256 tokenId = 1; tokenId < tokenIdCounter; tokenId++) {
+        BurnInfo memory info = burnInfo[tokenId];
+        if (info.amount > 0 && info.timestamp > 0) {
+            burnRequests[tokenId - 1] = info;
+        }
+    }
+    return burnRequests;
+}
+
 
 
     function generateSVG(uint256 _amount, uint256 _timestamp, string memory _requestType) internal pure returns (string memory) {

@@ -8,3 +8,4 @@ artifacts
 .env
 
 usingusdc.sol
+test.sol

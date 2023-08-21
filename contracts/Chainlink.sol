@@ -29,7 +29,7 @@ contract ChainlinkContract is ChainlinkClient, ConfirmedOwner {
 
         req.add(
             "get",
-            "https://api.prime.coinbase.com/v1/portfolios/:portfolio_id/wallets/:wallet_id/balance"
+            "Api link for Interactive Broker"
         );
 
         req.add("path", "data.balance.amount");

@@ -24,7 +24,7 @@ async function main() {
 
   // Deploy NFT contract
   const TokenRequest = await hre.ethers.getContractFactory("TokenRequest");
-  const tokenRequest = await TokenRequest.deploy("Tokenreceipt","TR","0xe0f837966a3db43De470695a02c131A893FeB5e4","1","0x93737B1246d4c9515c78c97EcD38B12BC85d1E74");
+  const tokenRequest = await TokenRequest.deploy("Tokenreceipt","TR","0x65d3090B7bdbe0898d1CfDfEE1ECAf2AD0cCB5a6","1","0x3054484157aA5667717319520c011aF26c8eD75f");
   await tokenRequest.deployed();
   const confirmations = 5; // You can adjust this number as needed
   await Promise.all([
@@ -33,7 +33,7 @@ async function main() {
   console.log("TokenRequest deployed to:", tokenRequest.address);
   await hre.run("verify:verify", {
     address: tokenRequest.address,
-    constructorArguments: ["Tokenreceipt","TR","0xe0f837966a3db43De470695a02c131A893FeB5e4","1","0x93737B1246d4c9515c78c97EcD38B12BC85d1E74"], // Add constructor arguments if any
+    constructorArguments: ["Tokenreceipt","TR","0x65d3090B7bdbe0898d1CfDfEE1ECAf2AD0cCB5a6","1","0x3054484157aA5667717319520c011aF26c8eD75f"], // Add constructor arguments if any
   });
 
 
