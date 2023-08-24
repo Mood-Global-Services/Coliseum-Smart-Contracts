@@ -32,7 +32,7 @@ contract ChainlinkRsc is ChainlinkClient, ConfirmedOwner {
 
         req.add(
             "get",
-            "https://api.prime.coinbase.com/v1/portfolios/:portfolio_id/wallets/:wallet_id/balance"
+            "http://localhost:5000/api/count" //this link won't work because we are using localhost so need to deploy our api in any hosting server to get https link
         );
 
         req.add("path", "data.balance.amount");

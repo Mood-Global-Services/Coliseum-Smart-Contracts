@@ -19,10 +19,19 @@ interface TITAInterface {
     function totalSupply() external view returns (uint256);
 }
 
+interface CmaxInterface {
+    function burnFrom(address _from, uint256 _amount) external;
+    function getTokenHolders() external view returns (address[] memory);
+    function transferFrom(address _from, address _to, uint256 _value) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+    function totalSupply() external view returns (uint256);
+}
+
 contract TokenRequest is ERC721URIStorage, Ownable {
     uint256 private tokenIdCounter;
     address public titaTokenAddress; // Address of the TITA token contract
     address public usdcTokenAddress; // Address of the USDC token contract
+    address public cmaxTokenAddress;
     uint256 public pricePerNFT; // Price for requesting tokens
     uint256 public annualDistributionPercentage = 4;
 
@@ -38,6 +47,12 @@ struct BurnInfo {
     uint256 timestamp;
 }
 
+struct StakingInfo {
+    uint256 amount;
+}
+
+mapping(address => StakingInfo) public stakingInfo;
+
 // Mapping to store token request information by token ID
 mapping(uint256 => TokenRequestInfo) public tokenRequests;
 // Mapping to store burn information by token ID
@@ -50,13 +65,67 @@ mapping(uint256 => BurnInfo) public burnInfo;
     // Timestamp of the last annual distribution
     uint256 public lastAnnualDistributionTimestamp;
 
-     constructor(string memory _name, string memory _symbol, address _usdcTokenAddress, uint256 _pricePerNFT, address _titaTokenAddress) ERC721(_name, _symbol) {
+     constructor(string memory _name, string memory _symbol,address _cmaxTokenAddress, address _usdcTokenAddress, uint256 _pricePerNFT, address _titaTokenAddress) ERC721(_name, _symbol) {
         tokenIdCounter = 1;
         usdcTokenAddress = _usdcTokenAddress;
+        cmaxTokenAddress = _cmaxTokenAddress;
         pricePerNFT = _pricePerNFT;
         titaTokenAddress = _titaTokenAddress;
         lastAnnualDistributionTimestamp = block.timestamp;
     }
+
+    //stake cmax tokens
+
+     function stakeCMAX(uint256 _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        // Transfer CMAX tokens from user to contract
+        // Replace CMAXTokenAddress with the actual address of the CMAX token contract
+        CmaxInterface cmaxToken = CmaxInterface(cmaxTokenAddress);
+        require(cmaxToken.transferFrom(msg.sender, address(this), _amount), "CMAX transfer failed");
+
+        // Update staking information
+        stakingInfo[msg.sender].amount += _amount;
+    }
+
+
+// distribute 20% to cmax holders
+     function distributeStakingRewards() public onlyOwner {
+        // Retrieve the owner's USDC balance
+        USDCInterface usdcToken = USDCInterface(usdcTokenAddress);
+        uint256 ownerBalance = usdcToken.balanceOf(owner());
+
+        // Calculate the amount to distribute (20% of owner's balance)
+        uint256 amountToDistribute = (ownerBalance * 20) / 100;
+
+        // Ensure there are stakers to distribute to
+        require(amountToDistribute > 0, "No USDC to distribute or no stakers");
+
+        // Distribute to stakers based on their staked CMAX tokens
+        for (uint256 i = 0; i < tokenIdCounter; i++) {
+            address staker = ownerOf(i);
+            if (stakingInfo[staker].amount > 0) {
+                uint256 stakerShare = (stakingInfo[staker].amount * amountToDistribute) / totalStakedCMAX();
+                require(usdcToken.transfer(staker, stakerShare), "USDC transfer to staker failed");
+            }
+        }
+    }
+
+    // Function to get the total staked CMAX tokens
+    function totalStakedCMAX() public view returns (uint256) {
+        uint256 total = 0;
+        for (uint256 i = 0; i < tokenIdCounter; i++) {
+            address staker = ownerOf(i);
+            total += stakingInfo[staker].amount;
+        }
+        return total;
+    }
+
+
+
+
+
+
+
 
  function requestToken(address _userAddress, uint256 _amount) public {
     require(_amount > 0, "Amount must be greater than 0");

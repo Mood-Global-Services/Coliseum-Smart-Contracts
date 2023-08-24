@@ -24,7 +24,7 @@ async function main() {
 
   // Deploy NFT contract
   const TokenRequest = await hre.ethers.getContractFactory("TokenRequest");
-  const tokenRequest = await TokenRequest.deploy("Tokenreceipt","TR","0x65d3090B7bdbe0898d1CfDfEE1ECAf2AD0cCB5a6","1","0x3054484157aA5667717319520c011aF26c8eD75f");
+  const tokenRequest = await TokenRequest.deploy("contract name","contract symbol ","cmax token address ","usdc token address","price", "tita token address");
   await tokenRequest.deployed();
   const confirmations = 5; // You can adjust this number as needed
   await Promise.all([
@@ -33,7 +33,7 @@ async function main() {
   console.log("TokenRequest deployed to:", tokenRequest.address);
   await hre.run("verify:verify", {
     address: tokenRequest.address,
-    constructorArguments: ["Tokenreceipt","TR","0x65d3090B7bdbe0898d1CfDfEE1ECAf2AD0cCB5a6","1","0x3054484157aA5667717319520c011aF26c8eD75f"], // Add constructor arguments if any
+    constructorArguments: ["contract name","contract symbol ","cmax token address ","usdc token address"," price ", " tita token address"], // Add constructor arguments if any
   });
 
 
