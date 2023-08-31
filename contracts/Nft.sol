@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "base64-sol/base64.sol";
+import "@thirdweb-dev/contracts/eip/interface/IERC721Supply.sol";
 
 interface USDCInterface {
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool);
@@ -27,7 +28,7 @@ interface CmaxInterface {
     function totalSupply() external view returns (uint256);
 }
 
-contract TokenRequest is ERC721URIStorage, Ownable {
+contract TokenRequest is ERC721URIStorage, Ownable, IERC721Supply {
     uint256 private tokenIdCounter;
     address public titaTokenAddress; // Address of the TITA token contract
     address public usdcTokenAddress; // Address of the USDC token contract
@@ -87,6 +88,10 @@ mapping(uint256 => BurnInfo) public burnInfo;
         stakingInfo[msg.sender].amount += _amount;
     }
 
+     function totalSupply() public view override returns (uint256) {
+     return tokenIdCounter;
+  }
+
 
 // distribute 20% to cmax holders
      function distributeStakingRewards() public onlyOwner {
@@ -137,7 +142,7 @@ mapping(uint256 => BurnInfo) public burnInfo;
     uint256 tokenId = tokenIdCounter;
     _mint(_userAddress, tokenId);
     
-    string memory svgData = generateSVG(_amount, block.timestamp, "Mint  Request");
+    string memory svgData = generateSVG(_amount, block.timestamp, "Mint Token Request");
     string memory tokenURI = generateTokenURI(svgData);
     
     _setTokenURI(tokenId, tokenURI);

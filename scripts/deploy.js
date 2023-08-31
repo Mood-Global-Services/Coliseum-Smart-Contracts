@@ -14,17 +14,28 @@ async function main() {
   const TitaToken = await hre.ethers.getContractFactory("Tita");
   const titaToken = await TitaToken.deploy();
   await titaToken.deployed();
+  const confirmation = 5; // You can adjust this number as needed
+  await Promise.all([
+    titaToken.deployTransaction.wait(confirmation),
+  ]);
   console.log("Tita ERC20 token deployed to:", titaToken.address);
+
+  await hre.run("verify:verify", {
+    address: titaToken.address,
+    constructorArguments: [],
+  });
+ 
 
   // Deploy Cmax ERC20 token
   const CmaxToken = await hre.ethers.getContractFactory("Cmax");
   const cmaxToken = await CmaxToken.deploy();
   await cmaxToken.deployed();
   console.log("Cmax ERC20 token deployed to:", cmaxToken.address);
+ 
 
   // Deploy NFT contract
   const TokenRequest = await hre.ethers.getContractFactory("TokenRequest");
-  const tokenRequest = await TokenRequest.deploy("contract name","contract symbol ","cmax token address ","usdc token address","price", "tita token address");
+  const tokenRequest = await TokenRequest.deploy("Token Receipt","TB","0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747","0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747","1", "0x00f35860FA16166B0A83E4424807CAe4AFC69Faf");
   await tokenRequest.deployed();
   const confirmations = 5; // You can adjust this number as needed
   await Promise.all([
@@ -33,8 +44,9 @@ async function main() {
   console.log("TokenRequest deployed to:", tokenRequest.address);
   await hre.run("verify:verify", {
     address: tokenRequest.address,
-    constructorArguments: ["contract name","contract symbol ","cmax token address ","usdc token address"," price ", " tita token address"], // Add constructor arguments if any
+    constructorArguments: ["Token Receipt","TB","0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747","0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747","1", "0x00f35860FA16166B0A83E4424807CAe4AFC69Faf"], // Add constructor arguments if any
   });
+
 
 
   //Deploy Rsc Token
@@ -44,6 +56,8 @@ async function main() {
   console.log("Rsc ERC20 token deployed to:", rsc.address);
 
   console.log("Deployment completed!");
+
+  
 
 }
 
