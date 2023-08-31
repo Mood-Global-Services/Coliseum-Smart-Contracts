@@ -2,9 +2,6 @@
 Smarts Contracts Repo
 
 
-Link for the workflow: https://moodglobalservices.notion.site/RWFA-DApp-fb743a281b4c48af84dfca1da3db766f?pvs=25
-
-
 
 Chainlink smart contract to fetch Intercative Broker Balance:
 
