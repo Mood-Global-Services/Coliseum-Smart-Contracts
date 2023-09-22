@@ -177,35 +177,3 @@ The etherscan section includes an API key for Etherscan. Etherscan is a tool to 
 It specifies the API key for the Polygon Mumbai network.
 Conclusion
 In summary, this configuration file sets up the development environment for Ethereum and Polygon smart contract development using the Hardhat framework. It defines network connections, Solidity version, and an API key for Etherscan. It also includes a task for listing Ethereum accounts. This configuration is crucial for seamless development and testing of smart contracts.
-
-0x1DC788a0ad7aA71d8e0Fa0766B27C0CaB8491B85
-
-
-
-
-
-
-
-  const [deployer] = await ethers.getSigners();
-  const Pool = await ethers.getContractFactory("Pool");
-  const token0Address = "0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd"; // Replace with the actual token0 address
-  const token1Address = "0xaFb8c4Dc3236D1baB10B919C221b96F8F74Ea214"; // Replace with the actual token1 address
-  const fee = 1; // Replace with the desired fee value
-
-  // Deploy the contract
-  const pool = await Pool.deploy(token0Address, token1Address, fee);
-  await pool.deployed();
-
-  console.log("Pool contract deployed to:", pool.address);
-  console.log("Deployer address:", deployer.address);
-  const confirmationsd = 5;
-  await Promise.all([
-    pool.deployTransaction.wait(confirmationsd),
-  ]);
-  console.log("Pool ERC20 token deployed to:", pool.address);
-
-  await hre.run("verify:verify", {
-    address: pool.address,
-    constructorArguments: [token0Address, token1Address, fee],
-  });
-   

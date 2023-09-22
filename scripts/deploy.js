@@ -12,25 +12,6 @@ async function main() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-
   // Deploy Tita ERC20 token
   const ColiseumToken = await hre.ethers.getContractFactory("Coliseum");
   const coliseumToken = await ColiseumToken.deploy();
@@ -77,8 +58,6 @@ async function main() {
   console.log("Rsc ERC20 token deployed to:", rsc.address);
 
   console.log("Deployment completed!");
-
-  
 
 
 }
