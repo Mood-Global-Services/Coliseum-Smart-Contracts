@@ -137,6 +137,31 @@ mapping(uint256 => BurnInfo) public burnInfo;
     require(_amount > 0, "Amount must be greater than 0");
     
     // Transfer USDC tokens from user to contract
+    USDCInterface usdcToken = USDCInterface(usdcTokenAddress);
+    require(usdcToken.transferFrom(_userAddress, address(this), pricePerNFT * _amount), "USDC transfer failed");
+    
+    uint256 tokenId = tokenIdCounter;
+    _mint(_userAddress, tokenId);
+    
+    string memory svgData = generateSVG(_amount, block.timestamp, "Mint  Request");
+    string memory tokenURI = generateTokenURI(svgData);
+    
+    _setTokenURI(tokenId, tokenURI);
+    
+    // Store the request information
+    tokenRequests[tokenId] = TokenRequestInfo({
+        userAddress: _userAddress,
+        amount: _amount,
+        timestamp: block.timestamp
+    });
+    
+    tokenIdCounter++;
+}
+
+ function requesttitaToken(address _userAddress, uint256 _amount) public {
+    require(_amount > 0, "Amount must be greater than 0");
+    
+    // Transfer USDC tokens from user to contract
     // Calculate the total USDC amount to charge
     uint256 totalUsdcAmount = 1 * 10**6 * _amount;
 
@@ -147,7 +172,7 @@ mapping(uint256 => BurnInfo) public burnInfo;
     uint256 tokenId = tokenIdCounter;
     _mint(_userAddress, tokenId);
     
-    string memory svgData = generateSVG(_amount, block.timestamp, "Mint Token Request");
+    string memory svgData = generateSVG(_amount, block.timestamp, "Mint Tita Request");
     string memory tokenURI = generateTokenURI(svgData);
     
     _setTokenURI(tokenId, tokenURI);
@@ -165,18 +190,15 @@ mapping(uint256 => BurnInfo) public burnInfo;
 function requestCmaxToken(address _userAddress, uint256 _amount) public {
     require(_amount > 0, "Amount must be greater than 0");
 
-    // Calculate the total USDC amount to charge
-    uint256 totalUsdcAmount = 1 * 10**6 * _amount;
-
     // Transfer USDC tokens from user to contract
     USDCInterface usdcToken = USDCInterface(usdcTokenAddress);
-    require(usdcToken.transferFrom(_userAddress, address(this), totalUsdcAmount), "USDC transfer failed");
+    require(usdcToken.transferFrom(_userAddress, address(this), pricePerNFT * _amount), "USDC transfer failed");
 
     // Mint an NFT for the user
     uint256 tokenId = tokenIdCounter;
     _mint(_userAddress, tokenId);
 
-    string memory svgData = generateSVG(_amount, block.timestamp, "Minted CMAX");
+    string memory svgData = generateSVG(_amount ,block.timestamp, "Mint CMAX Request");
     string memory tokenURI = generateTokenURI(svgData);
 
     _setTokenURI(tokenId, tokenURI);
@@ -190,10 +212,7 @@ function requestCmaxToken(address _userAddress, uint256 _amount) public {
 
     tokenIdCounter++;
 
-    // Calculate the amount of CMAX tokens to mint
-    // Assuming 1 CMAX token has 18 decimal places
-
-     uint256 cmaxAmount = _amount * 10**18 * 8;
+    uint256 cmaxAmount = _amount * 10**18 * 8;
 
 
     // Mint CMAX tokens for the user based on the calculated amount
@@ -203,7 +222,6 @@ function requestCmaxToken(address _userAddress, uint256 _amount) public {
 
 
 
- 
    function burnToken(uint256 _amount) public {
     require(_amount > 0, "Amount must be greater than 0");
 

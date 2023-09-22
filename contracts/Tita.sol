@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.21;
+pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract Tita is ERC20, ERC20Burnable, Ownable {
     address[] public tokenHolders; // Array to store token holders' addresses
 
-    constructor() ERC20("MyToken", "MTK") {
+    constructor() ERC20("Tita", "TT") {
         _mint(msg.sender, 10000 * 10 ** decimals());
         tokenHolders.push(msg.sender); // Add the contract deployer as the initial token holder
     }
